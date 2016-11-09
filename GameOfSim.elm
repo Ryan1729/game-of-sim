@@ -1,4 +1,4 @@
-module ChangeMe exposing (..)
+module GameOfSim exposing (..)
 
 import Html.App exposing (program)
 import MaterialModel exposing (MaterialModel, defaultState)

@@ -3,7 +3,7 @@
 #runs elm-live and updates terminal title
 # according to the sate of the compile
 
-main="ChangeMe"
+main="GameOfSim"
 
 #record profile log while running elm live
 #watcher="unbuffer node --prof -- `which elm-live` ${main}.elm --output=elm.js"
