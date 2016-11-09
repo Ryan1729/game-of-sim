@@ -1,5 +1,8 @@
 module Model exposing (..)
 
+import GenericDict exposing (GenericDict)
+import Extras
+
 
 type alias Model =
     { board : Board
@@ -24,12 +27,17 @@ type GameState
 
 
 type alias Board =
-    {}
+    GenericDict BoardId Player
+
+
+type Player
+    = User
+    | CPU
 
 
 initialBoard : Board
 initialBoard =
-    {}
+    GenericDict.empty boardIdComparer
 
 
 type Piece
@@ -50,8 +58,41 @@ removeFromRack piece rack =
     rack
 
 
-type BoardId
-    = BoardId
+type alias BoardId =
+    ( NodeId, NodeId )
+
+
+boardIdComparer ( nodeId1, nodeId2 ) ( nodeId3, nodeId4 ) =
+    case nodeIdComparer nodeId1 nodeId3 of
+        EQ ->
+            nodeIdComparer nodeId2 nodeId4
+
+        otherwise ->
+            otherwise
+
+
+type NodeId
+    = A
+    | B
+    | C
+    | D
+    | E
+    | F
+
+
+nodeIdPossibilities =
+    [ A
+    , B
+    , C
+    , D
+    , E
+    , F
+    ]
+
+
+nodeIdComparer nodeId1 nodeId2 =
+    compare (Extras.indexOfDefault nodeIdPossibilities nodeId1)
+        (Extras.indexOfDefault nodeIdPossibilities nodeId2)
 
 
 place : Piece -> BoardId -> Board -> Board
