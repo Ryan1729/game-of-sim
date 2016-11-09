@@ -14,7 +14,7 @@ type alias Model =
 
 defaultModel =
     { board = initialBoard
-    , selected = Nothing
+    , selected = Just User
     , rack = initialRack
     , gameState = InProgress
     }
@@ -36,10 +36,7 @@ getPiece =
 
 initialBoard : Board
 initialBoard =
-    -- GenericDict.empty boardIdComparer
-    boardIdPossibilities
-        |> List.map (\boardId -> ( boardId, User ))
-        |> GenericDict.fromList boardIdComparer
+    GenericDict.empty boardIdComparer
 
 
 boardIdPossibilities =
@@ -115,16 +112,21 @@ nodeIdComparer nodeId1 nodeId2 =
         (Extras.indexOfDefault nodeIdPossibilities nodeId2)
 
 
-place : Piece -> BoardId -> Board -> Board
-place piece boardId board =
-    board
+place : BoardId -> Piece -> Board -> Board
+place =
+    GenericDict.insert
 
 
 getAvailableBoardIds : Board -> List BoardId
 getAvailableBoardIds board =
-    []
+    let
+        usedIds =
+            GenericDict.keys board
+    in
+        boardIdPossibilities
+            |> List.filter (\boardId -> List.member boardId usedIds |> not)
 
 
 getAvailablePieces : Rack -> List Piece
 getAvailablePieces rack =
-    []
+    [ CPU ]

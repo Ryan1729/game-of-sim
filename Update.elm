@@ -18,7 +18,7 @@ update msg model =
                     let
                         newModel =
                             { model
-                                | board = Model.place piece boardId model.board
+                                | board = Model.place boardId piece model.board
                                 , rack = Model.removeFromRack piece model.rack
                                 , selected = Nothing
                             }
@@ -91,4 +91,4 @@ cpuTurn model =
 
 applyMove : Model -> Move -> Model
 applyMove model ( piece, boardId ) =
-    { model | board = Model.place piece boardId model.board }
+    { model | board = Model.place boardId piece model.board }
