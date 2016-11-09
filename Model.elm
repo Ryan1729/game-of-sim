@@ -27,21 +27,25 @@ type GameState
 
 
 type alias Board =
-    GenericDict BoardId Player
-
-
-type Player
-    = User
-    | CPU
+    GenericDict BoardId Piece
 
 
 initialBoard : Board
 initialBoard =
-    GenericDict.empty boardIdComparer
+    -- GenericDict.empty boardIdComparer
+    nodeIdPossibilities
+        |> List.concatMap
+            (\nodeId ->
+                nodeIdPossibilities
+                    |> List.map ((,) nodeId)
+                    |> List.map (\boardId -> ( boardId, User ))
+            )
+        |> GenericDict.fromList boardIdComparer
 
 
 type Piece
-    = Piece
+    = User
+    | CPU
 
 
 type alias Rack =
