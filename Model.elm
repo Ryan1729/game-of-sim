@@ -30,17 +30,33 @@ type alias Board =
     GenericDict BoardId Piece
 
 
+getPiece =
+    GenericDict.get
+
+
 initialBoard : Board
 initialBoard =
     -- GenericDict.empty boardIdComparer
+    boardIdPossibilities
+        |> List.map (\boardId -> ( boardId, User ))
+        |> GenericDict.fromList boardIdComparer
+
+
+boardIdPossibilities =
     nodeIdPossibilities
         |> List.concatMap
-            (\nodeId ->
-                nodeIdPossibilities
-                    |> List.map ((,) nodeId)
-                    |> List.map (\boardId -> ( boardId, User ))
+            (\nodeId1 ->
+                List.filterMap
+                    (\nodeId2 ->
+                        case nodeIdComparer nodeId1 nodeId2 of
+                            LT ->
+                                Just ( nodeId1, nodeId2 )
+
+                            _ ->
+                                Nothing
+                    )
+                    nodeIdPossibilities
             )
-        |> GenericDict.fromList boardIdComparer
 
 
 type Piece
