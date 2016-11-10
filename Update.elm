@@ -24,9 +24,9 @@ update msg model =
                                     -- , selected = Nothing
                             }
                     in
-                        if isWinningModel newModel then
+                        if isCPULosingModel newModel then
                             ( { newModel | gameState = Win }, Cmd.none )
-                        else if isLosingModel newModel then
+                        else if isUserLosingModel newModel then
                             ( { newModel | gameState = Loss }, Cmd.none )
                         else
                             ( cpuTurn newModel, Cmd.none )
@@ -44,19 +44,18 @@ type alias Move =
 
 getMoves : Rack -> Board -> List Move
 getMoves rack board =
-    List.map2 (,)
-        (Model.getAvailablePieces rack)
-        (Model.getAvailableBoardIds board)
+    Model.getAvailableBoardIds board
+        |> List.map ((,) CPU)
         |> Extras.shuffle (Random.initialSeed 42)
 
 
-isWinningModel : Model -> Bool
-isWinningModel model =
+isCPULosingModel : Model -> Bool
+isCPULosingModel model =
     boardHasTriangleOf CPU model.board
 
 
-isLosingModel : Model -> Bool
-isLosingModel model =
+isUserLosingModel : Model -> Bool
+isUserLosingModel model =
     boardHasTriangleOf User model.board
 
 
@@ -110,19 +109,26 @@ nonLosingMove model move =
 
         potentialFutureMoves =
             getMoves model.rack potentialModel.board
+                |> Debug.log "considered"
     in
-        case Extras.find (winningMove potentialModel) potentialFutureMoves of
+        case Extras.find (losingMove potentialModel) potentialFutureMoves of
             Just _ ->
-                False
+                True
 
             Nothing ->
-                True
+                False
 
 
 winningMove : Model -> Move -> Bool
 winningMove model move =
     applyMove model move
-        |> isWinningModel
+        |> isUserLosingModel
+
+
+losingMove : Model -> Move -> Bool
+losingMove model move =
+    applyMove model move
+        |> isCPULosingModel
 
 
 cpuTurn : Model -> Model
@@ -131,12 +137,20 @@ cpuTurn model =
         moves : List Move
         moves =
             getMoves model.rack model.board
+
+        postMovementModel =
+            Extras.find (winningMove model) moves
+                |> Extras.orElseLazy (\() -> Extras.find (losingMove model >> not) moves)
+                |> Extras.orElseLazy (\() -> Random.step (Random.sample moves) (Random.initialSeed 42) |> fst |> Debug.log "gave up")
+                |> Maybe.map (applyMove model)
+                |> Maybe.withDefault model
     in
-        Extras.find (winningMove model) moves
-            |> Extras.orElseLazy (\() -> Extras.find (nonLosingMove model) moves)
-            |> Extras.orElseLazy (\() -> Random.step (Random.sample moves) (Random.initialSeed 42) |> fst)
-            |> Maybe.map (applyMove model)
-            |> Maybe.withDefault model
+        if isCPULosingModel postMovementModel then
+            { postMovementModel | gameState = Win }
+        else if isUserLosingModel postMovementModel then
+            { postMovementModel | gameState = Loss }
+        else
+            postMovementModel
 
 
 applyMove : Model -> Move -> Model
