@@ -19,12 +19,15 @@ update msg model =
                         newModel =
                             { model
                                 | board = Model.place boardId piece model.board
-                                , rack = Model.removeFromRack piece model.rack
-                                , selected = Nothing
+                                , rack =
+                                    Model.removeFromRack piece model.rack
+                                    -- , selected = Nothing
                             }
                     in
                         if isWinningModel newModel then
                             ( { newModel | gameState = Win }, Cmd.none )
+                        else if isLosingModel newModel then
+                            ( { newModel | gameState = Loss }, Cmd.none )
                         else
                             ( cpuTurn newModel, Cmd.none )
 
@@ -49,7 +52,54 @@ getMoves rack board =
 
 isWinningModel : Model -> Bool
 isWinningModel model =
-    False
+    boardHasTriangleOf CPU model.board
+
+
+isLosingModel : Model -> Bool
+isLosingModel model =
+    boardHasTriangleOf User model.board
+
+
+boardHasTriangleOf : Piece -> Board -> Bool
+boardHasTriangleOf piece board =
+    let
+        matchingEdges =
+            getListOfMatchingEdges piece board
+    in
+        matchingEdges
+            |> Extras.find
+                (\( corner1, corner2 ) ->
+                    let
+                        corner2Targets =
+                            List.filterMap
+                                (\( source, target ) ->
+                                    if source == corner2 then
+                                        Just target
+                                    else if target == corner2 then
+                                        Just source
+                                    else
+                                        Nothing
+                                )
+                                matchingEdges
+                    in
+                        corner2Targets
+                            |> List.any
+                                (\corner3 ->
+                                    List.member ( corner3, corner1 ) matchingEdges
+                                        || List.member ( corner1, corner3 ) matchingEdges
+                                )
+                )
+            |> isJust
+
+
+isJust : Maybe a -> Bool
+isJust maybe =
+    case maybe of
+        Just _ ->
+            True
+
+        Nothing ->
+            False
 
 
 nonLosingMove : Model -> Move -> Bool

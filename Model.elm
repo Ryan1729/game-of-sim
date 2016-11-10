@@ -56,6 +56,18 @@ boardIdPossibilities =
             )
 
 
+getListOfMatchingEdges : Piece -> Board -> List BoardId
+getListOfMatchingEdges piece board =
+    GenericDict.toList board
+        |> List.filterMap
+            (\( boardId, edgePiece ) ->
+                if piece == edgePiece then
+                    Just boardId
+                else
+                    Nothing
+            )
+
+
 type Piece
     = User
     | CPU
