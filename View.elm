@@ -119,10 +119,9 @@ drawEdge extraAttributes ( source, target ) =
             nodeIdToPosition target
 
         yOffset =
-            if
-                --this means "is the line pointing upward?"
-                x1 < x2 || y1 > y2
-            then
+            --without this, then the lines are different thicknesses
+            --depending on direction
+            if x1 < x2 || y1 > y2 then
                 -halfEdgeSize
             else
                 halfEdgeSize
