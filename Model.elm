@@ -7,7 +7,6 @@ import Extras
 type alias Model =
     { board : Board
     , selected : Maybe Piece
-    , rack : Rack
     , gameState : GameState
     }
 
@@ -15,7 +14,6 @@ type alias Model =
 defaultModel =
     { board = initialBoard
     , selected = Just User
-    , rack = initialRack
     , gameState = InProgress
     }
 
@@ -73,20 +71,6 @@ type Piece
     | CPU
 
 
-type alias Rack =
-    {}
-
-
-initialRack : Rack
-initialRack =
-    {}
-
-
-removeFromRack : Piece -> Rack -> Rack
-removeFromRack piece rack =
-    rack
-
-
 type alias BoardId =
     ( NodeId, NodeId )
 
@@ -137,8 +121,3 @@ getAvailableBoardIds board =
     in
         boardIdPossibilities
             |> List.filter (\boardId -> List.member boardId usedIds |> not)
-
-
-getAvailablePieces : Rack -> List Piece
-getAvailablePieces rack =
-    [ CPU ]

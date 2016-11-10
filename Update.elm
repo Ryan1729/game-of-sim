@@ -19,9 +19,6 @@ update msg model =
                         newModel =
                             { model
                                 | board = Model.place boardId piece model.board
-                                , rack =
-                                    Model.removeFromRack piece model.rack
-                                    -- , selected = Nothing
                             }
                     in
                         if isCPULosingModel newModel then
@@ -42,8 +39,8 @@ type alias Move =
     ( Piece, BoardId )
 
 
-getMoves : Rack -> Board -> List Move
-getMoves rack board =
+getMoves : Board -> List Move
+getMoves board =
     Model.getAvailableBoardIds board
         |> List.map ((,) CPU)
         |> Extras.shuffle (Random.initialSeed 42)
@@ -101,24 +98,6 @@ isJust maybe =
             False
 
 
-nonLosingMove : Model -> Move -> Bool
-nonLosingMove model move =
-    let
-        potentialModel =
-            applyMove model move
-
-        potentialFutureMoves =
-            getMoves model.rack potentialModel.board
-                |> Debug.log "considered"
-    in
-        case Extras.find (losingMove potentialModel) potentialFutureMoves of
-            Just _ ->
-                True
-
-            Nothing ->
-                False
-
-
 winningMove : Model -> Move -> Bool
 winningMove model move =
     applyMove model move
@@ -136,12 +115,12 @@ cpuTurn model =
     let
         moves : List Move
         moves =
-            getMoves model.rack model.board
+            getMoves model.board
 
         postMovementModel =
             Extras.find (winningMove model) moves
                 |> Extras.orElseLazy (\() -> Extras.find (losingMove model >> not) moves)
-                |> Extras.orElseLazy (\() -> Random.step (Random.sample moves) (Random.initialSeed 42) |> fst |> Debug.log "gave up")
+                |> Extras.orElseLazy (\() -> Random.step (Random.sample moves) (Random.initialSeed 42) |> fst)
                 |> Maybe.map (applyMove model)
                 |> Maybe.withDefault model
     in

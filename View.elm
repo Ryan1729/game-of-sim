@@ -12,7 +12,6 @@ import Material.Grid as Grid exposing (Device(..))
 import Svg exposing (Svg, svg, rect, path, circle, Attribute, ellipse, g)
 import Svg.Attributes exposing (..)
 import Svg.Events exposing (onClick)
-import PieceView
 
 
 view : MaterialModel -> Html MaterialMsg
@@ -27,10 +26,7 @@ view { mdl, model } =
             ]
             [ text "New Game" ]
         , Grid.grid []
-            [ Grid.cell [ Grid.size All 5 ]
-                [ PieceView.renderRack model.selected model.rack
-                ]
-            , Grid.cell [ Grid.size All 6 ]
+            [ Grid.cell [ Grid.size All 6 ]
                 [ Html.div [ Html.Attributes.style [ ( "width", boardWidthString ++ "px" ), ( "display", "flex" ), ( "justify-content", "center" ), ( "font-size", (boardWidth / 32 |> toString) ++ "px" ) ] ]
                     [ model.gameState
                         |> gameStateToString
