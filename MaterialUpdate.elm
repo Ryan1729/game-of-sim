@@ -19,5 +19,5 @@ materialUpdate msg materialModel =
             in
                 ( { materialModel | model = model }, Cmd.map U cmds )
 
-        Mdl msg' ->
-            Material.update msg' materialModel
+        Mdl msg_ ->
+            Material.update msg_ materialModel
