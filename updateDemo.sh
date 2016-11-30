@@ -2,4 +2,4 @@
 
 mkdir -p docs
 
-cp {index.html,elm.js} ./docs && echo "docs/ updated"
+cp {index.html,elm.js,rippleButton.js,rippleButton.css} ./docs && echo "docs/ updated"
