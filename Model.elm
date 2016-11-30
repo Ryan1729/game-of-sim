@@ -1,6 +1,6 @@
 module Model exposing (..)
 
-import GenericDict exposing (GenericDict)
+import EveryDict exposing (EveryDict)
 import Extras
 
 
@@ -25,16 +25,16 @@ type GameState
 
 
 type alias Board =
-    GenericDict BoardId Piece
+    EveryDict BoardId Piece
 
 
 getPiece =
-    GenericDict.get
+    EveryDict.get
 
 
 initialBoard : Board
 initialBoard =
-    GenericDict.empty boardIdComparer
+    EveryDict.empty
 
 
 boardIdPossibilities =
@@ -56,7 +56,7 @@ boardIdPossibilities =
 
 getListOfMatchingEdges : Piece -> Board -> List BoardId
 getListOfMatchingEdges piece board =
-    GenericDict.toList board
+    EveryDict.toList board
         |> List.filterMap
             (\( boardId, edgePiece ) ->
                 if piece == edgePiece then
@@ -110,14 +110,14 @@ nodeIdComparer nodeId1 nodeId2 =
 
 place : BoardId -> Piece -> Board -> Board
 place =
-    GenericDict.insert
+    EveryDict.insert
 
 
 getAvailableBoardIds : Board -> List BoardId
 getAvailableBoardIds board =
     let
         usedIds =
-            GenericDict.keys board
+            EveryDict.keys board
     in
         boardIdPossibilities
             |> List.filter (\boardId -> List.member boardId usedIds |> not)

@@ -1,47 +1,42 @@
 module View exposing (view)
 
-import MaterialModel exposing (MaterialModel)
 import Model exposing (..)
 import Html exposing (Html, text)
-import Html.App
 import Html.Attributes
-import MaterialMsg exposing (MaterialMsg(Mdl, U))
+import Html.Events
 import Msg exposing (Msg(..))
-import Material.Button as Button
-import Material.Grid as Grid exposing (Device(..))
 import Svg exposing (Svg, svg, rect, path, circle, Attribute, ellipse, g)
 import Svg.Attributes exposing (..)
 import Svg.Events exposing (onClick)
 
 
-view : MaterialModel -> Html MaterialMsg
-view { mdl, model } =
+view : Model -> Html Msg
+view model =
     Html.div []
-        [ Button.render Mdl
-            [ 0 ]
-            mdl
-            [ Button.raised
-            , Button.ripple
-            , Button.onClick (U NewGame)
+        [ Html.button
+            [ Html.Events.onClick NewGame
             ]
             [ text "New Game" ]
-        , Grid.grid []
-            [ Grid.cell [ Grid.size All 6 ]
-                [ Html.div [ Html.Attributes.style [ ( "width", boardWidthString ++ "px" ), ( "display", "flex" ), ( "justify-content", "center" ), ( "font-size", (boardWidth / 32 |> toString) ++ "px" ) ] ]
-                    [ model.gameState
-                        |> gameStateToString
-                        |> Html.text
-                    ]
-                , svg
-                    [ width boardWidthString
-                    , height boardHeightString
-                    , viewBox ("0 0 " ++ boardWidthString ++ " " ++ boardHeightString)
-                    ]
-                    [ renderBoard model.selected model.board
-                    ]
+        , Html.div
+            [ Html.Attributes.style
+                [ ( "width", boardWidthString ++ "px" )
+                , ( "display", "flex" )
+                , ( "justify-content", "center" )
+                , ( "font-size", (boardWidth / 32 |> toString) ++ "px" )
+                , ( "flex-wrap", "wrap" )
                 ]
             ]
-            |> Html.App.map U
+            [ model.gameState
+                |> gameStateToString
+                |> Html.text
+            , svg
+                [ width boardWidthString
+                , height boardHeightString
+                , viewBox ("0 0 " ++ boardWidthString ++ " " ++ boardHeightString)
+                ]
+                [ renderBoard model.selected model.board
+                ]
+            ]
         ]
 
 
