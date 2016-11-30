@@ -5,6 +5,7 @@ import Model exposing (Model, defaultModel)
 import View exposing (view)
 import Msg exposing (Msg)
 import Update exposing (update)
+import Ports
 
 
 init : ( Model, Cmd Msg )
@@ -14,7 +15,10 @@ init =
 
 subscriptions : Model -> Sub Msg
 subscriptions =
-    always Sub.none
+    Msg.NewGame
+        |> always
+        |> Ports.newGame
+        |> always
 
 
 main =

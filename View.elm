@@ -13,11 +13,7 @@ import Svg.Events exposing (onClick)
 view : Model -> Html Msg
 view model =
     Html.div []
-        [ Html.button
-            [ Html.Events.onClick NewGame
-            ]
-            [ text "New Game" ]
-        , Html.div
+        [ Html.div
             [ Html.Attributes.style
                 [ ( "width", boardWidthString ++ "px" )
                 , ( "display", "flex" )
